@@ -5,8 +5,9 @@ const utils = require('./utils')
 const router = express.Router()
 
 router.get('/PING', ping)
-router.get('/GET/:key', get)
-router.get('/SET/:key/:value', set)
+
+router.get('/events/:hash', getEvent)
+router.post('/events', pushEvent)
 
 async function ping(req, res, next) {
     try {
@@ -16,20 +17,26 @@ async function ping(req, res, next) {
     }
 }
 
-async function get(req, res, next) {
+async function getEvent(req, res, next) {
     try {
-        const key = req.params['key']
-        await res.json(await utils.get(key))
+        const hash = req.query['hash']
+        await res.json(await utils.getEvent(hash))
     } catch (e) {
         next(e)
     }
 }
 
-async function set(req, res, next) {
+async function pushEvent(req, res, next) {
+    const { project, username } = req.body
+
     try {
-        const key = req.params['key']
-        const value = req.params['value']
-        await res.json(await utils.set([key, value]))
+        const fields = {
+            project,
+            username,
+        }
+        const hash = await utils.getUniqueHash()
+        await utils.createHash(hash, fields)
+        await res.json(utils.pushPendingEvent(hash))
     } catch (e) {
         next(e)
     }

@@ -18,20 +18,44 @@ if (password) {
 }
 
 const client = redis.createClient(connectionConfig)
+
+// Make functions asynchronous
 const pingAsync = promisify(client.ping).bind(client)
-const getAsync = promisify(client.get).bind(client)
-const setAsync = promisify(client.set).bind(client)
+const hGetAllAsync = promisify(client.hgetall).bind(client)
+const hSetAsync = promisify(client.hset).bind(client)
+const hIncryByAsync = promisify(client.hincrby).bind(client)
+const lpushAsync = promisify(client.lpush).bind(client)
 
 async function ping() {
   return await pingAsync()
 }
 
-async function get(key) {
-  return await getAsync(key)
+async function getUniqueHash() {
+  return await hIncryByAsync('unique_incr', 'index', 1)
 }
 
-async function set(args) {
-  return await setAsync(args)
+async function createHash(hash, fields) {
+  const args = Object.entries(fields).reduce((acc, value) => {
+    acc.push(...value)
+    return acc
+  }, [])
+
+  return await hSetAsync(hash, args)
+}
+
+async function pushPendingEvent(hash) {
+  return await lpushAsync('pending', hash)
+}
+
+async function getEvent(hash) {
+  const values = await hGetAllAsync(hash)
+  const object = {}
+  for (let index = 0; index < values.length; index += 2) {
+    const field = values[index]
+    object[field] = values[index + 1]
+  }
+
+  return object
 }
 
 client.on('connect', function() {
@@ -40,6 +64,8 @@ client.on('connect', function() {
 
 module.exports = {
   ping,
-  get,
-  set,
+  getEvent,
+  getUniqueHash,
+  createHash,
+  pushPendingEvent,
 }
