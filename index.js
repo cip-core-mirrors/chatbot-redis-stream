@@ -1,20 +1,12 @@
-const redis = require('redis')
+const config = require('./config.js')
+const api = require('./src')
 
-const host = process.env.REDIS_HOST
-const port = process.env.REDIS_PORT || 6379
-const password = process.env.REDIS_PASSWORD
-
-const config = {
-  host: host,
-  port: port,
-}
-
-if (password) {
-  config.auth_pass = password
-}
-
-const client = redis.createClient(config)
-
-client.on('connect', function() {
-  console.log('Connected !')
+api.init().then(app => {
+    const port = config.PORT
+    app.listen(port, () => {
+        console.log(`[INFO] Listening on port ${port}`)
+    })
+}).catch(e => {
+    console.error(`[FATAL] Error starting server`)
+    console.error(e)
 })
