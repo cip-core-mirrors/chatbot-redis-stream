@@ -1,4 +1,5 @@
 const redis = require('redis')
+const { promisify } = require('util')
 
 const config = require('../config.js')
 
@@ -17,17 +18,20 @@ if (password) {
 }
 
 const client = redis.createClient(connectionConfig)
+const pingAsync = promisify(client.ping).bind(client)
+const getAsync = promisify(client.get).bind(client)
+const setAsync = promisify(client.set).bind(client)
 
 async function ping() {
-  return await client.ping()
+  return await pingAsync()
 }
 
 async function get(key) {
-  return await client.get(key)
+  return await getAsync(key)
 }
 
 async function set(args) {
-  return await client.set(args)
+  return await setAsync(args)
 }
 
 client.on('connect', function() {
