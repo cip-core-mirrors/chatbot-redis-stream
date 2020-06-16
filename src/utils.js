@@ -22,10 +22,20 @@ async function ping() {
   return await client.ping()
 }
 
+async function get(key) {
+  return await client.get(key)
+}
+
+async function set(args) {
+  return await client.set(args)
+}
+
 client.on('connect', function() {
   console.log('Connected !')
 })
 
 module.exports = {
   ping,
+  get,
+  set,
 }
