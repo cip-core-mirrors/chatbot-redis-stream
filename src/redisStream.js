@@ -38,7 +38,8 @@ async function pushEvent(req, res, next) {
         }
         const hash = await utils.getUniqueHash()
         await utils.createHash(hash, fields)
-        await res.json(utils.pushPendingEvent(hash))
+        await utils.pushPendingEvent(hash)
+        await res.json({ hash: fields })
     } catch (e) {
         console.error(e)
         next(e)
