@@ -13,6 +13,7 @@ async function ping(req, res, next) {
     try {
         await res.json(await utils.ping())
     } catch (e) {
+        console.error(e)
         next(e)
     }
 }
@@ -22,6 +23,7 @@ async function getEvent(req, res, next) {
         const hash = req.params['hash']
         await res.json(await utils.getEvent(hash))
     } catch (e) {
+        console.error(e)
         next(e)
     }
 }
@@ -38,6 +40,7 @@ async function pushEvent(req, res, next) {
         await utils.createHash(hash, fields)
         await res.json(utils.pushPendingEvent(hash))
     } catch (e) {
+        console.error(e)
         next(e)
     }
 }
