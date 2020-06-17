@@ -32,7 +32,7 @@ async function getEvent(req, res, next) {
 async function popEvent(req, res, next) {
     try {
         const hash = await utils.popPendingEvent()
-        console.log('hash :')
+        console.log('hash: ')
         console.log(hash)
         await res.json(await utils.getEvent(hash))
     } catch (e) {
