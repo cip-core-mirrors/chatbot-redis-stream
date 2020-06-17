@@ -7,7 +7,8 @@ const router = express.Router()
 router.get('/PING', ping)
 
 router.get('/events/:hash', getEvent)
-router.post('/events', pushEvent)
+router.get('/events/pop', popEvent)
+router.post('/events/push', pushEvent)
 
 async function ping(req, res, next) {
     try {
@@ -21,6 +22,16 @@ async function ping(req, res, next) {
 async function getEvent(req, res, next) {
     try {
         const hash = req.params['hash']
+        await res.json(await utils.getEvent(hash))
+    } catch (e) {
+        console.error(e)
+        next(e)
+    }
+}
+
+async function popEvent(req, res, next) {
+    try {
+        const hash = await utils.popPendingEvent()
         await res.json(await utils.getEvent(hash))
     } catch (e) {
         console.error(e)

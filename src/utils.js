@@ -25,6 +25,7 @@ const hGetAllAsync = promisify(client.hgetall).bind(client)
 const hSetAsync = promisify(client.hset).bind(client)
 const hIncryByAsync = promisify(client.hincrby).bind(client)
 const lpushAsync = promisify(client.lpush).bind(client)
+const rpoplpushAsync = promisify(client.rpoplpush).bind(client)
 
 async function ping() {
   return await pingAsync()
@@ -47,6 +48,10 @@ async function pushPendingEvent(hash) {
   return await lpushAsync('pending', hash)
 }
 
+async function popPendingEvent() {
+  return await rpoplpushAsync('pending', 'processing')
+}
+
 async function getEvent(hash) {
   return await hGetAllAsync(hash)
 }
@@ -61,4 +66,5 @@ module.exports = {
   getUniqueHash,
   createHash,
   pushPendingEvent,
+  popPendingEvent,
 }
