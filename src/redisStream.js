@@ -19,7 +19,7 @@ async function ping(req, res, next) {
 
 async function getEvent(req, res, next) {
     try {
-        const hash = req.query['hash']
+        const hash = req.params['hash']
         await res.json(await utils.getEvent(hash))
     } catch (e) {
         next(e)
