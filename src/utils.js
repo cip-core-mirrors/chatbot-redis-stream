@@ -48,18 +48,7 @@ async function pushPendingEvent(hash) {
 }
 
 async function getEvent(hash) {
-  console.log('hash :')
-  console.log(hash)
-  const values = await hGetAllAsync(hash)
-  console.log('values :')
-  console.log(values)
-  const object = {}
-  for (let index = 0; index < values.length; index += 2) {
-    const field = values[index]
-    object[field] = values[index + 1]
-  }
-
-  return object
+  return await hGetAllAsync(hash)
 }
 
 client.on('connect', function() {
